@@ -4,42 +4,46 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Command Center</title>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<meta name="theme-color" content="#080D14">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Poppins:wght@400;500;600&family=Space+Grotesk:wght@500;700&display=swap">
 <style>
-:root{--paper:#F2F4F6;--sheet:#fff;--ink:#10213A;--muted:#55667E;--line:#D5DCE5;--accent:#1F5FD1;--accent-ink:#fff;
-  --warn:#F2B705;--warn-soft:#FDF1C7;--ok:#1E8455;--ok-soft:#DDF2E7;
-  --body:"IBM Plex Sans",system-ui,sans-serif;--mono:"IBM Plex Mono",ui-monospace,Consolas,monospace}
-@media (prefers-color-scheme:dark){:root{--paper:#0C141F !important;--sheet:#132033;--ink:#E5ECF5 !important;--muted:#93A4BB;--line:#24364F;--accent-ink:#0C141F;--warn-soft:#3A3212;--ok:#4FCB8F;--ok-soft:#12321F;color-scheme:dark}}
+/* Default theme: TRXmode (dark ink, lime accent). Brand colors are overridden from config.js. */
+:root{--paper:#080D14;--sheet:#101923;--sheet-2:#16212D;--ink:#EEF2F4;--muted:#9CAEBB;--line:#25313D;--accent:#C7F24E;--accent-ink:#17200B;
+  --warn:#F5B544;--warn-soft:rgba(245,181,68,.12);--ok:#C7F24E;--ok-soft:rgba(199,242,78,.12);
+  --display:"Space Grotesk","Arial Narrow",Helvetica,sans-serif;--body:"Poppins","Helvetica Neue",Helvetica,Arial,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;color-scheme:dark}
 *{box-sizing:border-box}
-body{margin:0;background:var(--paper);color:var(--ink);font:15px/1.5 var(--body)}
+body{margin:0;background:var(--paper);color:var(--ink);font:14.5px/1.55 var(--body)}
 header{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;padding:18px max(16px,3vw);border-bottom:1px solid var(--line);background:var(--sheet)}
-header h1{margin:0;font-size:1.25rem}
+header h1{margin:0;font-size:1.3rem;font-family:var(--display);letter-spacing:-.01em}
+a{color:var(--accent)}
 header h1 span{color:var(--accent)}
 .when{font-family:var(--mono);font-size:.8rem;color:var(--muted)}
 main{padding:20px max(16px,3vw);display:grid;gap:16px;grid-template-columns:repeat(12,minmax(0,1fr));max-width:1280px;margin:0 auto}
-.panel{background:var(--sheet);border:1px solid var(--line);border-radius:8px;padding:16px;min-width:0;display:grid;gap:12px;align-content:start}
-.panel h2{margin:0;font-size:.78rem;font-family:var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:500}
+.panel{background:var(--sheet);border:1px solid var(--line);border-radius:14px;padding:18px;min-width:0;display:grid;gap:12px;align-content:start}
+.panel h2{margin:0;font-size:.72rem;font-family:var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--accent);font-weight:500}
 .span-12{grid-column:span 12}.span-7{grid-column:span 7}.span-5{grid-column:span 5}.span-6{grid-column:span 6}
 .tiles{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
-.tile{border:1px solid var(--line);border-radius:6px;padding:12px}
-.tile b{display:block;font-size:2rem;line-height:1;font-variant-numeric:tabular-nums}
+.tile{border:1px solid var(--line);border-radius:10px;padding:12px;background:var(--sheet-2)}
+.tile b{display:block;font-family:var(--display);font-size:2.2rem;line-height:1;font-variant-numeric:tabular-nums}
 .tile span{font-size:.82rem;color:var(--muted)}
 .tile.warn{background:var(--warn-soft);border-color:var(--warn)}
 .queue{list-style:none;margin:0;padding:0;display:grid;gap:8px}
-.queue li{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 12px;align-items:center;border:1px solid var(--line);border-radius:6px;padding:10px 12px}
+.queue li{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 12px;align-items:center;border:1px solid var(--line);border-radius:10px;padding:10px 12px;background:var(--sheet-2)}
 .queue .meta{color:var(--muted);font-size:.85rem}
 .queue .amt{font-family:var(--mono);font-weight:500;text-align:right}
-.queue .btns{grid-column:1/-1;display:flex;gap:8px}
+.queue .btns{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:8px}
 .empty{color:var(--muted);font-size:.9rem;padding:8px 0}
 button{font:inherit;cursor:pointer}
-.btn{border:1px solid var(--line);background:var(--paper);color:var(--ink);border-radius:6px;padding:.45em .8em;font-weight:500}
+.btn{border:1px solid var(--line);background:var(--paper);color:var(--ink);border-radius:8px;padding:.45em .85em;font-weight:500}
+.btn.primary{font-weight:600}
 .btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
 .btn:hover{border-color:var(--accent)}
 .actions{display:grid;gap:8px}
 .actions .btn{text-align:left;padding:.65em .8em}
 .log{list-style:none;margin:0;padding:0;font-family:var(--mono);font-size:.8rem;color:var(--muted);display:grid;gap:6px;max-height:180px;overflow-y:auto}
 .ask{display:flex;gap:8px}
-.ask input,.find input{flex:1;min-width:0;border:1px solid var(--line);background:var(--paper);color:var(--ink);border-radius:6px;padding:.55em .75em;font:inherit}
+.ask input,.find input{flex:1;min-width:0;border:1px solid var(--line);background:var(--paper);color:var(--ink);border-radius:8px;padding:.55em .75em;font:inherit}
 .chips{display:flex;flex-wrap:wrap;gap:6px}
 .chip{border:1px solid var(--line);background:var(--sheet);color:var(--ink);border-radius:999px;padding:.3em .7em;font-size:.85rem}
 .chip:hover{border-color:var(--accent);color:var(--accent)}
@@ -95,7 +99,7 @@ footer{padding:16px max(16px,3vw) 28px;color:var(--muted);font-size:.82rem;text-
     <div id="customer"></div>
   </section>
 </main>
-<footer>Example data only. Template by <a href="https://github.com/xschaudhry">Chaudhry Usman</a> · TRXmode.</footer>
+<footer>Example data only. Template by <a href="https://xschaudhry.github.io/">Chaudhry Usman</a> · TRXmode. <a href="https://github.com/xschaudhry/command-center-template">View the code</a></footer>
 
 <script src="config.js"></script>
 <script src="data.js"></script>
@@ -108,8 +112,8 @@ footer{padding:16px max(16px,3vw) 28px;color:var(--muted);font-size:.82rem;text-
 
   // Branding
   const root = document.documentElement.style;
-  root.setProperty('--accent', C.colors.accent);
-  if (!matchMedia('(prefers-color-scheme: dark)').matches) { root.setProperty('--ink', C.colors.ink); root.setProperty('--paper', C.colors.paper); }
+  const tokens = { accent: '--accent', accentInk: '--accent-ink', ink: '--ink', muted: '--muted', paper: '--paper', panel: '--sheet', panel2: '--sheet-2', line: '--line' };
+  for (const [key, cssVar] of Object.entries(tokens)) if (C.colors[key]) root.setProperty(cssVar, C.colors[key]);
   document.title = `${C.business} · ${C.tagline}`;
   $('brand').innerHTML = `${esc(C.business)} <span>/ ${esc(C.tagline)}</span>`;
   $('when').textContent = new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' });

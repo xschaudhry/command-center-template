@@ -23,13 +23,13 @@ config.js   business name, owner, brand colors, quick actions
 data.js     example tiles, approval queue, handbook entries, customers
 ```
 
-Change the name and colors in `config.js` and the whole dashboard follows. There's no build step: open `index.html` in a browser.
+The default theme is TRXmode's dark look. Change the name and colors in `config.js` (any you leave out keep the default) and the whole dashboard follows. There's no build step: open `index.html` in a browser.
 
 ```js
 window.CONFIG = {
   business: 'Northside Plumbing',
   owner: 'Sam',
-  colors: { accent: '#0E7C66', ink: '#10213A', paper: '#F3F6F5' },
+  colors: { accent: '#0E7C66', accentInk: '#FFFFFF', ink: '#10213A', muted: '#55667E', paper: '#F3F6F5', panel: '#FFFFFF', panel2: '#F7F9F8', line: '#D5DCE5' },
   ...
 };
 ```
