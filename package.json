@@ -1,0 +1,8 @@
+{
+  "name": "command-center-template",
+  "version": "1.0.0",
+  "description": "White-label owner dashboard for AI shop agents: approval queue, quick actions, handbook Q&A and customer memory.",
+  "scripts": { "test": "node --test" },
+  "author": "Chaudhry Usman <usman@trxmode.com>",
+  "license": "MIT"
+}

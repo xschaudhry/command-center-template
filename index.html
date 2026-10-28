@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Command Center</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+:root{--paper:#F2F4F6;--sheet:#fff;--ink:#10213A;--muted:#55667E;--line:#D5DCE5;--accent:#1F5FD1;--accent-ink:#fff;
+  --warn:#F2B705;--warn-soft:#FDF1C7;--ok:#1E8455;--ok-soft:#DDF2E7;
+  --body:"IBM Plex Sans",system-ui,sans-serif;--mono:"IBM Plex Mono",ui-monospace,Consolas,monospace}
+@media (prefers-color-scheme:dark){:root{--paper:#0C141F !important;--sheet:#132033;--ink:#E5ECF5 !important;--muted:#93A4BB;--line:#24364F;--accent-ink:#0C141F;--warn-soft:#3A3212;--ok:#4FCB8F;--ok-soft:#12321F;color-scheme:dark}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font:15px/1.5 var(--body)}
+header{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;padding:18px max(16px,3vw);border-bottom:1px solid var(--line);background:var(--sheet)}
+header h1{margin:0;font-size:1.25rem}
+header h1 span{color:var(--accent)}
+.when{font-family:var(--mono);font-size:.8rem;color:var(--muted)}
+main{padding:20px max(16px,3vw);display:grid;gap:16px;grid-template-columns:repeat(12,minmax(0,1fr));max-width:1280px;margin:0 auto}
+.panel{background:var(--sheet);border:1px solid var(--line);border-radius:8px;padding:16px;min-width:0;display:grid;gap:12px;align-content:start}
+.panel h2{margin:0;font-size:.78rem;font-family:var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:500}
+.span-12{grid-column:span 12}.span-7{grid-column:span 7}.span-5{grid-column:span 5}.span-6{grid-column:span 6}
+.tiles{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.tile{border:1px solid var(--line);border-radius:6px;padding:12px}
+.tile b{display:block;font-size:2rem;line-height:1;font-variant-numeric:tabular-nums}
+.tile span{font-size:.82rem;color:var(--muted)}
+.tile.warn{background:var(--warn-soft);border-color:var(--warn)}
+.queue{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.queue li{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 12px;align-items:center;border:1px solid var(--line);border-radius:6px;padding:10px 12px}
+.queue .meta{color:var(--muted);font-size:.85rem}
+.queue .amt{font-family:var(--mono);font-weight:500;text-align:right}
+.queue .btns{grid-column:1/-1;display:flex;gap:8px}
+.empty{color:var(--muted);font-size:.9rem;padding:8px 0}
+button{font:inherit;cursor:pointer}
+.btn{border:1px solid var(--line);background:var(--paper);color:var(--ink);border-radius:6px;padding:.45em .8em;font-weight:500}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn:hover{border-color:var(--accent)}
+.actions{display:grid;gap:8px}
+.actions .btn{text-align:left;padding:.65em .8em}
+.log{list-style:none;margin:0;padding:0;font-family:var(--mono);font-size:.8rem;color:var(--muted);display:grid;gap:6px;max-height:180px;overflow-y:auto}
+.ask{display:flex;gap:8px}
+.ask input,.find input{flex:1;min-width:0;border:1px solid var(--line);background:var(--paper);color:var(--ink);border-radius:6px;padding:.55em .75em;font:inherit}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{border:1px solid var(--line);background:var(--sheet);color:var(--ink);border-radius:999px;padding:.3em .7em;font-size:.85rem}
+.chip:hover{border-color:var(--accent);color:var(--accent)}
+.answer{border-left:3px solid var(--accent);padding:.3em .8em;min-height:3.5em}
+.answer cite{display:block;font-style:normal;font-family:var(--mono);font-size:.75rem;color:var(--muted);margin-top:6px}
+.card{border:1px dashed var(--accent);border-radius:6px;padding:12px;display:grid;gap:6px}
+.card ul{margin:0;padding-left:18px;color:var(--muted);font-size:.9rem}
+.card .tip{color:var(--accent);font-weight:500}
+footer{padding:16px max(16px,3vw) 28px;color:var(--muted);font-size:.82rem;text-align:center}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+@media (max-width:900px){.span-7,.span-5,.span-6{grid-column:span 12}.tiles{grid-template-columns:repeat(2,minmax(0,1fr))}}
+</style>
+</head>
+<body>
+<header>
+  <h1 id="brand"></h1>
+  <span class="when" id="when"></span>
+</header>
+<main>
+  <section class="panel span-12" aria-label="Today">
+    <h2>Today</h2>
+    <div class="tiles">
+      <div class="tile"><b id="tQuotes"></b><span>Quotes drafted</span></div>
+      <div class="tile warn"><b id="tPending"></b><span>Waiting for your approval</span></div>
+      <div class="tile"><b id="tLeads"></b><span>Leads followed up</span></div>
+      <div class="tile"><b id="tBooked"></b><span>Jobs booked</span></div>
+    </div>
+  </section>
+
+  <section class="panel span-7">
+    <h2>Quotes waiting for approval</h2>
+    <ul class="queue" id="queue"></ul>
+  </section>
+
+  <section class="panel span-5">
+    <h2>Quick actions</h2>
+    <div class="actions" id="actions"></div>
+    <h2>Activity</h2>
+    <ul class="log" id="log" aria-live="polite"></ul>
+  </section>
+
+  <section class="panel span-6">
+    <h2>Ask the shop handbook</h2>
+    <form class="ask" id="askForm"><input id="askText" autocomplete="off" aria-label="Question" placeholder="e.g. what's the warranty on brakes?"><button class="btn primary" type="submit">Ask</button></form>
+    <div class="chips" id="askChips"></div>
+    <div class="answer" id="answer"><span style="color:var(--muted)">Your crew asks here instead of interrupting you.</span></div>
+  </section>
+
+  <section class="panel span-6">
+    <h2>Customer memory</h2>
+    <form class="find" id="findForm" style="display:flex;gap:8px"><input id="findText" autocomplete="off" aria-label="Customer name or phone" placeholder="Name or phone number"><button class="btn primary" type="submit">Find</button></form>
+    <div class="chips" id="custChips"></div>
+    <div id="customer"></div>
+  </section>
+</main>
+<footer>Example data only. Template by <a href="https://github.com/xschaudhry">Chaudhry Usman</a> · TRXmode.</footer>
+
+<script src="config.js"></script>
+<script src="data.js"></script>
+<script src="src/handbook.js"></script>
+<script>
+(() => {
+  const C = window.CONFIG, D = window.DATA, $ = id => document.getElementById(id);
+  const money = n => new Intl.NumberFormat('en-US', { style: 'currency', currency: C.currency }).format(n);
+  const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
+
+  // Branding
+  const root = document.documentElement.style;
+  root.setProperty('--accent', C.colors.accent);
+  if (!matchMedia('(prefers-color-scheme: dark)').matches) { root.setProperty('--ink', C.colors.ink); root.setProperty('--paper', C.colors.paper); }
+  document.title = `${C.business} · ${C.tagline}`;
+  $('brand').innerHTML = `${esc(C.business)} <span>/ ${esc(C.tagline)}</span>`;
+  $('when').textContent = new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' });
+
+  // Tiles
+  const queue = D.approvals.slice();
+  const tiles = () => {
+    $('tQuotes').textContent = D.today.quotes;
+    $('tLeads').textContent = D.today.leadsFollowedUp;
+    $('tBooked').textContent = D.today.booked;
+    $('tPending').textContent = queue.length;
+  };
+
+  // Activity log
+  function log(text) {
+    const li = document.createElement('li');
+    li.textContent = `${new Date().toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })}  ${text}`;
+    $('log').prepend(li);
+  }
+
+  // Approval queue
+  function renderQueue() {
+    const ul = $('queue'); ul.innerHTML = '';
+    if (!queue.length) { ul.innerHTML = '<li class="empty" style="border:0">All caught up. Nothing waiting for you.</li>'; return tiles(); }
+    for (const q of queue) {
+      const li = document.createElement('li');
+      li.innerHTML = `<div><b>${esc(q.job)}</b><div class="meta">${esc(q.customer)} · ${esc(q.vehicle)} · #${esc(q.id)}</div></div>
+        <div class="amt">${money(q.total)}</div>
+        <div class="btns"><button class="btn primary" data-a="approve">Approve and send</button><button class="btn" data-a="hold">Call customer first</button></div>`;
+      li.querySelector('[data-a=approve]').onclick = () => { done(q); log(`Approved #${q.id} (${money(q.total)}) and texted it to ${q.customer}.`); };
+      li.querySelector('[data-a=hold]').onclick = () => { done(q); log(`Held #${q.id}. Added "call ${q.customer}" to your list.`); };
+      ul.appendChild(li);
+    }
+    tiles();
+  }
+  function done(q) { queue.splice(queue.indexOf(q), 1); renderQueue(); }
+
+  // Quick actions
+  const fill = t => t.replace('{staleCount}', D.staleQuotes).replace('{quotes}', D.today.quotes).replace('{booked}', D.today.booked);
+  for (const a of C.quickActions) {
+    const b = document.createElement('button');
+    b.className = 'btn'; b.type = 'button'; b.textContent = a.label;
+    b.onclick = () => log(fill(a.log));
+    $('actions').appendChild(b);
+  }
+
+  // Handbook Q&A
+  function ask(question) {
+    const hit = window.Handbook.findAnswer(question, D.handbook);
+    $('answer').innerHTML = hit
+      ? `${esc(hit.a)}<cite>Source: Shop handbook ${esc(hit.src)}</cite>`
+      : `<span style="color:var(--muted)">That isn't in the handbook yet. I've sent the question to ${esc(C.owner)} so the answer can be added.</span>`;
+    if (!hit) log(`New handbook question for ${C.owner}: "${question}"`);
+  }
+  for (const h of D.handbook.slice(0, 3)) {
+    const b = document.createElement('button');
+    b.type = 'button'; b.className = 'chip'; b.textContent = h.q;
+    b.onclick = () => { $('askText').value = h.q; ask(h.q); };
+    $('askChips').appendChild(b);
+  }
+  $('askForm').onsubmit = e => { e.preventDefault(); const q = $('askText').value.trim(); if (q) ask(q); };
+
+  // Customer memory
+  function showCustomer(c) {
+    $('customer').innerHTML = !c ? '<p class="empty">No customer found. Try a name or the last 4 digits of a phone number.</p>' :
+      `<div class="card"><b>${esc(c.name)} · ${esc(c.vehicle)}</b><span class="meta" style="color:var(--muted);font-size:.85rem">${esc(c.phone)} · ${esc(c.prefs)}</span>
+        <ul>${c.history.map(h => `<li>${esc(h)}</li>`).join('')}</ul><span class="tip">Suggestion: ${esc(c.suggestion)}</span></div>`;
+  }
+  function find(text) {
+    const t = text.toLowerCase().replace(/\D/g, '') || null, n = text.toLowerCase();
+    showCustomer(D.customers.find(c => c.name.toLowerCase().includes(n) || (t && c.phone.replace(/\D/g, '').includes(t))));
+  }
+  for (const c of D.customers) {
+    const b = document.createElement('button');
+    b.type = 'button'; b.className = 'chip'; b.textContent = c.name;
+    b.onclick = () => showCustomer(c);
+    $('custChips').appendChild(b);
+  }
+  $('findForm').onsubmit = e => { e.preventDefault(); const q = $('findText').value.trim(); if (q) find(q); };
+
+  renderQueue();
+  showCustomer(D.customers[0]);
+  log('Morning: 3 quotes drafted overnight are waiting for you.');
+})();
+</script>
+</body>
+</html>
